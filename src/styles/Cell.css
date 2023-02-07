@@ -1,0 +1,32 @@
+.Cell {
+  width: 45px;
+  height: 45px;
+}
+
+.Cell.cyan {
+  background-color: cyan;
+}
+
+.Cell.blue {
+  background-color: blue;
+}
+
+.Cell.orange {
+  background-color: orange;
+}
+
+.Cell.yellow {
+  background-color: yellow;
+}
+
+.Cell.green {
+  background-color: green;
+}
+
+.Cell.purple {
+  background-color: purple;
+}
+
+.Cell.red {
+  background-color: red;
+}
