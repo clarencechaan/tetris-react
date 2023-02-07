@@ -62,10 +62,18 @@ function Grid() {
         for (let j = 0; j < tetromino[0].length; j++)
           if (tetromino[i][j]) result[i + y][j + x] = tetromino[i][j];
 
+      function clearCompletedRows(prev) {
+        let result = [];
+        for (let i = HEIGHT - 1; i >= 0; i--)
+          if (prev[i].some((cell) => !cell)) result.push(prev[i]);
+        while (result.length < HEIGHT) result.push(Array(WIDTH).fill(null));
+        result.reverse();
+        return result;
+      }
+
+      result = clearCompletedRows(result);
       return result;
     });
-
-    setActiveTetromino({ tetromino: getTetromino(), x: 3, y: 0 });
   }, [activeTetromino]);
 
   const moveTetromino = useCallback(
@@ -100,8 +108,11 @@ function Grid() {
             if (!checkCollision()) x++;
             break;
           case "D":
-            if (checkCollision()) deactivateTetromino();
-            else y++;
+            if (!checkCollision()) y++;
+            else {
+              deactivateTetromino();
+              return { tetromino: getTetromino(), x: 3, y: 0 };
+            }
             break;
           default:
         }
@@ -113,6 +124,7 @@ function Grid() {
   );
 
   useEffect(() => {
+    console.log("asdf");
     const gravityInterval = setInterval(() => {
       moveTetromino("D");
     }, 100);
