@@ -6,166 +6,28 @@ import { useCallback, useEffect, useState } from "react";
 function Grid() {
   const WIDTH = 10;
   const HEIGHT = 20;
-  const [activeTetromino, setActiveTetromino] = useState({
-    tetromino: getTetromino(),
-    x: 3,
-    y: 0,
+
+  const [game, setGame] = useState(() => {
+    let grid = [];
+    for (let i = 0; i < HEIGHT; i++) grid.push(Array(WIDTH).fill(null));
+    let tetromino = { blocks: getTetromino(), x: 3, y: 0 };
+    return { grid, tetromino };
   });
 
-  let grid = [];
-  for (let i = 0; i < HEIGHT; i++) grid.push(Array(WIDTH).fill(null));
-
-  const [placedGrid, setPlacedGrid] = useState(grid);
-  const [activeGrid, setActiveGrid] = useState(
-    grid.map((row) => row.map(() => <Cell />))
-  );
-
-  const positionTetromino = useCallback(() => {
-    setActiveGrid(() => {
-      const { tetromino, x, y } = activeTetromino;
-
-      let result = [];
-      for (let i = 0; i < HEIGHT; i++) {
-        result[i] = [];
-        for (let j = 0; j < WIDTH; j++)
-          result[i][j] = placedGrid[i][j] || <Cell />;
-      }
-
-      for (let i = 0; i < tetromino.length; i++)
-        for (let j = 0; j < tetromino[0].length; j++)
-          if (tetromino[i][j] && placedGrid[i + y]?.[j + x] !== null)
-            return result;
-
-      for (let i = 0; i < tetromino.length; i++)
-        for (let j = 0; j < tetromino[0].length; j++)
-          if (tetromino[i][j]) result[i + y][j + x] = tetromino[i][j];
-
-      return result;
-    });
-  }, [activeTetromino, placedGrid]);
-
+  // gravity - shift tetromino down 1 block at a set interval
   useEffect(() => {
-    positionTetromino();
-  }, [positionTetromino]);
-
-  const deactivateTetromino = useCallback(() => {
-    setPlacedGrid((prev) => {
-      const { tetromino, x, y } = activeTetromino;
-
-      let result = [];
-      for (let i = 0; i < HEIGHT; i++) {
-        result[i] = [];
-        for (let j = 0; j < WIDTH; j++) result[i][j] = prev[i][j];
-      }
-
-      for (let i = 0; i < tetromino.length; i++)
-        for (let j = 0; j < tetromino[0].length; j++)
-          if (tetromino[i][j]) result[i + y][j + x] = tetromino[i][j];
-
-      function clearCompletedRows(prev) {
-        let result = [];
-        for (let i = HEIGHT - 1; i >= 0; i--)
-          if (prev[i].some((cell) => !cell)) result.push(prev[i]);
-        while (result.length < HEIGHT) result.push(Array(WIDTH).fill(null));
-        result.reverse();
-        return result;
-      }
-
-      result = clearCompletedRows(result);
-      return result;
-    });
-  }, [activeTetromino]);
-
-  const moveTetromino = useCallback(
-    (direction) => {
-      setActiveTetromino((prev) => {
-        let { tetromino, x, y } = prev;
-
-        function checkCollision() {
-          for (let i = 0; i < tetromino.length; i++)
-            for (let j = 0; j < tetromino[0].length; j++)
-              if (tetromino[i][j])
-                switch (direction) {
-                  case "L":
-                    if (placedGrid[y + i][x + j - 1] !== null) return true;
-                    break;
-                  case "R":
-                    if (placedGrid[y + i][x + j + 1] !== null) return true;
-                    break;
-                  case "D":
-                    if (placedGrid[y + i + 1]?.[x + j] !== null) return true;
-                    break;
-                  default:
-                }
-          return false;
-        }
-
-        switch (direction) {
-          case "L":
-            if (!checkCollision()) x--;
-            break;
-          case "R":
-            if (!checkCollision()) x++;
-            break;
-          case "D":
-            if (!checkCollision()) y++;
-            else {
-              deactivateTetromino();
-              return { tetromino: getTetromino(), x: 3, y: 0 };
-            }
-            break;
-          default:
-        }
-
-        return { tetromino, x, y };
-      });
-    },
-    [deactivateTetromino, placedGrid]
-  );
-
-  useEffect(() => {
-    console.log("asdf");
     const gravityInterval = setInterval(() => {
       moveTetromino("D");
-    }, 100);
+    }, 200);
 
     return () => {
       clearInterval(gravityInterval);
     };
-  }, [moveTetromino]);
+  }, []);
 
-  const rotateTetromino = useCallback(() => {
-    setActiveTetromino((prev) => {
-      const { tetromino, x, y } = prev;
-
-      let result = [];
-
-      for (let i = 0; i < tetromino.length; i++) {
-        result.push([]);
-        for (let j = 0; j < tetromino[0].length; j++)
-          result[i][j] = tetromino[i][j];
-      }
-
-      result = result[0].map((val, index) =>
-        result.map((row) => row[index]).reverse()
-      );
-
-      function checkCollision() {
-        for (let i = 0; i < result.length; i++)
-          for (let j = 0; j < result[0].length; j++)
-            if (result[i][j] && placedGrid[y + i]?.[x + j] !== null)
-              return true;
-        return false;
-      }
-
-      return { tetromino: checkCollision() ? tetromino : result, x, y };
-    });
-  }, [placedGrid]);
-
+  // listen to keyboard events to control tetromino
   useEffect(() => {
     function handleKeyDown(e) {
-      if (e.repeat) return;
-
       switch (e.key) {
         case "ArrowLeft":
           moveTetromino("L");
@@ -188,9 +50,94 @@ function Grid() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [moveTetromino, rotateTetromino]);
+  }, []);
 
-  return <div className="Grid">{activeGrid}</div>;
+  function checkCollision(grid, blocks, x, y) {
+    for (let i = 0; i < blocks.length; i++)
+      for (let j = 0; j < blocks[0].length; j++)
+        if (blocks[i][j] && grid[y + i]?.[x + j] !== null) return true;
+    return false;
+  }
+
+  function moveTetromino(direction) {
+    setGame((prev) => {
+      let grid = prev.grid;
+      let { blocks, x, y } = prev.tetromino;
+
+      function deactivateTetromino() {
+        // place tetromino on grid
+        for (let i = 0; i < blocks.length; i++)
+          for (let j = 0; j < blocks[0].length; j++)
+            if (blocks[i][j]) grid[y + i][x + j] = blocks[i][j];
+
+        // clear any completed rows
+        grid = grid.filter((row) => row.some((cell) => !cell));
+        while (grid.length < HEIGHT) grid.unshift(Array(WIDTH).fill(null));
+
+        // spawn new tetromino
+        blocks = getTetromino();
+        x = 3;
+        y = 0;
+      }
+
+      switch (direction) {
+        case "L":
+          if (!checkCollision(grid, blocks, x - 1, y)) x--;
+          break;
+        case "R":
+          if (!checkCollision(grid, blocks, x + 1, y)) x++;
+          break;
+        case "D":
+          if (!checkCollision(grid, blocks, x, y + 1)) y++;
+          else deactivateTetromino();
+          break;
+        default:
+      }
+
+      return { grid, tetromino: { blocks, x, y } };
+    });
+  }
+
+  function rotateTetromino() {
+    setGame((prev) => {
+      let grid = prev.grid;
+      let { blocks, x, y } = prev.tetromino;
+
+      let rotated = blocks[0].map((val, index) =>
+        blocks.map((row) => row[index]).reverse()
+      );
+
+      if (!checkCollision(grid, rotated, x, y)) blocks = rotated;
+      else if (!checkCollision(grid, rotated, x + 1, y)) {
+        blocks = rotated;
+        x++;
+      } else if (!checkCollision(grid, rotated, x - 1, y)) {
+        blocks = rotated;
+        x--;
+      }
+
+      return { grid, tetromino: { blocks, x, y } };
+    });
+  }
+
+  const gameToJSX = useCallback(() => {
+    let grid = game.grid;
+    let { blocks, x, y } = game.tetromino;
+
+    let cells = [];
+    for (let i = 0; i < HEIGHT; i++) {
+      cells.push([]);
+      for (let j = 0; j < WIDTH; j++) cells[i][j] = grid[i][j] || <Cell />;
+    }
+
+    for (let i = 0; i < blocks.length; i++)
+      for (let j = 0; j < blocks[0].length; j++)
+        if (blocks[i][j]) cells[y + i][x + j] = blocks[i][j];
+
+    return cells;
+  }, [game]);
+
+  return <div className="Grid">{gameToJSX()}</div>;
 }
 
 export default Grid;
