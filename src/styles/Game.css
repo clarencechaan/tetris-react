@@ -1,0 +1,6 @@
+.Game .next-tetromino {
+  width: 180px;
+  background-color: black;
+  display: inline-grid;
+  grid-template-columns: repeat(4, 45px);
+}
