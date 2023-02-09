@@ -24,7 +24,7 @@ function Game() {
   useEffect(() => {
     const gravityInterval = setInterval(() => {
       moveTetromino("D");
-    }, 200);
+    }, 300);
 
     return () => {
       clearInterval(gravityInterval);

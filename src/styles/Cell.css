@@ -1,32 +1,65 @@
 .Cell {
   width: 45px;
   height: 45px;
+  display: flex;
 }
 
 .Cell.cyan {
-  background-color: cyan;
+  background-color: rgba(0, 230, 254, 255);
 }
 
 .Cell.blue {
-  background-color: blue;
+  background-color: rgba(26, 1, 252, 255);
 }
 
 .Cell.orange {
-  background-color: orange;
+  background-color: rgba(255, 107, 8, 255);
 }
 
 .Cell.yellow {
-  background-color: yellow;
+  background-color: rgba(248, 219, 9, 255);
 }
 
 .Cell.green {
-  background-color: green;
+  background-color: rgba(44, 246, 25, 255);
 }
 
 .Cell.purple {
-  background-color: purple;
+  background-color: rgba(185, 3, 253, 255);
 }
 
 .Cell.red {
-  background-color: red;
+  background-color: rgba(255, 0, 79, 255);
+}
+
+.Cell.cyan,
+.Cell.blue,
+.Cell.orange,
+.Cell.yellow,
+.Cell.green,
+.Cell.purple,
+.Cell.red {
+  border-top: 6px solid rgba(255, 255, 255, 0.4);
+  border-left: 6px solid rgba(255, 255, 255, 0.2);
+  border-right: 6px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 6px solid rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+}
+
+.Cell.cyan::after,
+.Cell.blue::after,
+.Cell.orange::after,
+.Cell.yellow::after,
+.Cell.green::after,
+.Cell.purple::after,
+.Cell.red::after {
+  content: "";
+  width: 100%;
+  height: 50%;
+  background-image: linear-gradient(
+    -15deg,
+    transparent,
+    rgba(255, 255, 255, 0.8)
+  );
+  clip-path: polygon(0 0, 100% 0, 100% 40%, 0 100%);
 }
