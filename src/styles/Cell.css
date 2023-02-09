@@ -39,10 +39,10 @@
 .Cell.green,
 .Cell.purple,
 .Cell.red {
-  border-top: 6px solid rgba(255, 255, 255, 0.4);
-  border-left: 6px solid rgba(255, 255, 255, 0.2);
-  border-right: 6px solid rgba(0, 0, 0, 0.2);
-  border-bottom: 6px solid rgba(0, 0, 0, 0.4);
+  border-top: 0.4em solid rgba(255, 255, 255, 0.4);
+  border-left: 0.4em solid rgba(255, 255, 255, 0.2);
+  border-right: 0.4em solid rgba(0, 0, 0, 0.2);
+  border-bottom: 0.4em solid rgba(0, 0, 0, 0.4);
   box-sizing: border-box;
 }
 

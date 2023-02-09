@@ -1,11 +1,33 @@
 import Cell from "../components/Cell";
 
+const shapes = ["I", "J", "L", "O", "S", "T", "Z"];
+let queue = [];
+
+function shuffle(array) {
+  let currentIndex = array.length,
+    randomIndex;
+
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+
+  return array;
+}
+
 function getTetromino(shape) {
   let cells = [];
   let cell = null;
 
-  if (!shape)
-    shape = ["I", "J", "L", "O", "S", "T", "Z"][Math.floor(Math.random() * 7)];
+  if (!shape) {
+    if (!queue.length) queue = shuffle([...shapes]);
+    shape = queue.pop();
+  }
 
   switch (shape) {
     case "I":

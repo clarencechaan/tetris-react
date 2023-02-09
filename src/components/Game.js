@@ -11,9 +11,13 @@ function Game() {
   const [game, setGame] = useState(() => {
     let grid = [];
     for (let i = 0; i < HEIGHT; i++) grid.push(Array(WIDTH).fill(null));
+
+    let next = [];
+    for (let i = 0; i < 6; i++) next.push(getTetromino());
+
     let tetromino = {
       blocks: getTetromino(),
-      next: getTetromino(),
+      next,
       x: 3,
       y: 0,
     };
@@ -114,8 +118,8 @@ function Game() {
         while (grid.length < HEIGHT) grid.unshift(Array(WIDTH).fill(null));
 
         // spawn new tetromino
-        blocks = next;
-        next = getTetromino();
+        blocks = next.shift();
+        next.push(getTetromino());
         x = 3;
         y = 0;
       }
@@ -162,14 +166,29 @@ function Game() {
 
   const nextToJSX = useCallback(() => {
     let next = game.tetromino.next;
-    let cells = [];
+    let shapes = [];
 
-    for (let i = 0; i < 2; i++) {
-      cells.push([]);
-      for (let j = 0; j < 4; j++) cells[i][j] = next[i]?.[j] || <Cell />;
+    for (const tetr of next) {
+      let shape = [];
+      for (const row of tetr) if (row.some((cell) => cell)) shape.push(row);
+      shapes.push(shape);
     }
 
-    return cells;
+    let shapesJSX = [];
+
+    for (const shape of shapes) {
+      let shapeJSX = [];
+      for (const row of shape) {
+        let rowJSX = row.map((cell) => cell || <Cell />);
+        rowJSX = <div className="row">{rowJSX}</div>;
+        shapeJSX.push(rowJSX);
+      }
+
+      shapeJSX = <div className="shape">{shapeJSX}</div>;
+      shapesJSX.push(shapeJSX);
+    }
+
+    return shapesJSX;
   }, [game.tetromino.next]);
 
   return (
