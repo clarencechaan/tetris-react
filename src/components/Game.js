@@ -24,16 +24,82 @@ function Game() {
     return { grid, tetromino };
   });
 
+  const [stats, setStats] = useState({ level: 0, lines: 0, score: 0 });
+
   // gravity - shift tetromino down 1 block at a set interval
   useEffect(() => {
+    let speed;
+
+    switch (stats.level) {
+      case 0:
+        speed = (48 * 1000) / 60;
+        break;
+      case 1:
+        speed = (43 * 1000) / 60;
+        break;
+      case 2:
+        speed = (38 * 1000) / 60;
+        break;
+      case 3:
+        speed = (33 * 1000) / 60;
+        break;
+      case 4:
+        speed = (28 * 1000) / 60;
+        break;
+      case 5:
+        speed = (23 * 1000) / 60;
+        break;
+      case 6:
+        speed = (18 * 1000) / 60;
+        break;
+      case 7:
+        speed = (13 * 1000) / 60;
+        break;
+      case 8:
+        speed = (8 * 1000) / 60;
+        break;
+      case 9:
+        speed = (6 * 1000) / 60;
+        break;
+      case 10:
+      case 11:
+      case 12:
+        speed = (5 * 1000) / 60;
+        break;
+      case 13:
+      case 14:
+      case 15:
+        speed = (4 * 1000) / 60;
+        break;
+      case 16:
+      case 17:
+      case 18:
+        speed = (3 * 1000) / 60;
+        break;
+      case 19:
+      case 20:
+      case 21:
+      case 22:
+      case 23:
+      case 24:
+      case 25:
+      case 26:
+      case 27:
+      case 28:
+        speed = (2 * 1000) / 60;
+        break;
+      default:
+        speed = (1 * 1000) / 60;
+    }
+
     const gravityInterval = setInterval(() => {
       moveTetromino("D");
-    }, 300);
+    }, speed);
 
     return () => {
       clearInterval(gravityInterval);
     };
-  }, []);
+  }, [stats.level]);
 
   // listen to keyboard events to control tetromino
   useEffect(() => {
@@ -115,7 +181,32 @@ function Game() {
 
         // clear any completed rows
         grid = grid.filter((row) => row.some((cell) => !cell));
+        let clearedLines = HEIGHT - grid.length;
         while (grid.length < HEIGHT) grid.unshift(Array(WIDTH).fill(null));
+        setStats((prev) => {
+          let { level, lines, score } = prev;
+
+          switch (clearedLines) {
+            case 1:
+              score += 40 * (level + 1);
+              break;
+            case 2:
+              score += 100 * (level + 1);
+              break;
+            case 3:
+              score += 300 * (level + 1);
+              break;
+            case 4:
+              score += 1200 * (level + 1);
+              break;
+            default:
+          }
+
+          lines += clearedLines;
+          level = Math.floor(lines / 10);
+
+          return { level, lines, score };
+        });
 
         // spawn new tetromino
         blocks = next.shift();
@@ -194,7 +285,14 @@ function Game() {
   return (
     <div className="Game">
       <Grid game={game} HEIGHT={HEIGHT} WIDTH={WIDTH} />
-      <div className="next-tetromino">{nextToJSX()}</div>
+      <div className="right-sidebar">
+        <div className="next-tetromino">{nextToJSX()}</div>
+        <div className="stats">
+          <div className="level">Level: {stats.level}</div>
+          <div className="lines">Lines: {stats.lines}</div>
+          <div className="score">Score: {stats.score}</div>
+        </div>
+      </div>
     </div>
   );
 }

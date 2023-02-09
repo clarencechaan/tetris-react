@@ -2,8 +2,14 @@
   display: flex;
 }
 
-.Game .next-tetromino {
+.Game .right-sidebar {
   margin-left: 16px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+}
+
+.Game .next-tetromino {
   background-color: black;
   grid-template-columns: repeat(6, 16.67%);
   align-self: flex-start;
