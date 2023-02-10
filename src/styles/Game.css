@@ -2,6 +2,10 @@
   display: flex;
 }
 
+.Game .left-sidebar {
+  margin-right: 16px;
+}
+
 .Game .right-sidebar {
   margin-left: 16px;
   display: flex;
@@ -9,31 +13,42 @@
   row-gap: 16px;
 }
 
-.Game .next-tetromino {
+.Game .next-tetromino,
+.Game .hold {
   background-color: black;
   grid-template-columns: repeat(6, 16.67%);
   align-self: flex-start;
-  width: 160px;
-  height: 480px;
+  width: 152px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   row-gap: 16px;
-  justify-content: space-evenly;
   padding: 16px;
+  justify-content: space-evenly;
 }
 
-.Game .next-tetromino .shape {
+.Game .next-tetromino {
+  height: 480px;
+}
+
+.Game .hold {
+  height: 92px;
+}
+
+.Game .next-tetromino .shape,
+.Game .hold .shape {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.Game .next-tetromino .shape .row {
+.Game .next-tetromino .shape .row,
+.Game .hold .shape .row {
   display: flex;
 }
 
-.Game .next-tetromino .Cell {
+.Game .next-tetromino .Cell,
+.Game .hold .Cell {
   width: 30px;
   height: 30px;
   font-size: 11px;

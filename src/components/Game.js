@@ -17,6 +17,9 @@ function Game() {
 
     let tetromino = {
       blocks: getTetromino(),
+      rotation: 0,
+      hold: null,
+      holdAvailable: true,
       next,
       x: 3,
       y: 0,
@@ -108,6 +111,7 @@ function Game() {
     let moveDownInterval;
 
     function handleKeyDown(e) {
+      e.preventDefault();
       if (e.repeat) return;
       switch (e.key) {
         case "ArrowLeft":
@@ -115,23 +119,29 @@ function Game() {
           moveTetromino("L");
           moveLeftInterval = setInterval(() => {
             moveTetromino("L");
-          }, 100);
+          }, (5 * 1000) / 60);
           break;
         case "ArrowRight":
           clearInterval(moveLeftInterval);
           moveTetromino("R");
           moveRightInterval = setInterval(() => {
             moveTetromino("R");
-          }, 100);
+          }, (5 * 1000) / 60);
           break;
         case "ArrowDown":
           moveTetromino("D");
           moveDownInterval = setInterval(() => {
             moveTetromino("D");
-          }, 100);
+          }, (5 * 1000) / 60);
           break;
         case "ArrowUp":
           rotateTetromino();
+          break;
+        case " ":
+          moveTetromino(" ");
+          break;
+        case "Tab":
+          holdTetromino();
           break;
         default:
       }
@@ -171,7 +181,8 @@ function Game() {
   function moveTetromino(direction) {
     setGame((prev) => {
       let grid = prev.grid;
-      let { blocks, next, x, y } = prev.tetromino;
+      let { blocks, rotation, hold, holdAvailable, next, x, y } =
+        prev.tetromino;
 
       function deactivateTetromino() {
         // place tetromino on grid
@@ -211,6 +222,8 @@ function Game() {
         // spawn new tetromino
         blocks = next.shift();
         next.push(getTetromino());
+        rotation = 0;
+        holdAvailable = true;
         x = 3;
         y = 0;
       }
@@ -226,32 +239,80 @@ function Game() {
           if (!checkCollision(grid, blocks, x, y + 1)) y++;
           else deactivateTetromino();
           break;
+        case " ":
+          while (!checkCollision(grid, blocks, x, y + 1)) y++;
+          deactivateTetromino();
+          break;
         default:
       }
 
-      return { grid, tetromino: { blocks, next, x, y } };
+      return {
+        grid,
+        tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
+      };
     });
+  }
+
+  function rotateMatrix(arr) {
+    return arr[0].map((val, index) => arr.map((row) => row[index]).reverse());
   }
 
   function rotateTetromino() {
     setGame((prev) => {
       let grid = prev.grid;
-      let { blocks, next, x, y } = prev.tetromino;
+      let { blocks, rotation, hold, holdAvailable, next, x, y } =
+        prev.tetromino;
 
-      let rotated = blocks[0].map((val, index) =>
-        blocks.map((row) => row[index]).reverse()
-      );
+      let rotated = rotateMatrix(blocks);
 
-      if (!checkCollision(grid, rotated, x, y)) blocks = rotated;
-      else if (!checkCollision(grid, rotated, x + 1, y)) {
+      if (!checkCollision(grid, rotated, x, y)) {
         blocks = rotated;
+        rotation = (rotation + 1) % 4;
+      } else if (!checkCollision(grid, rotated, x + 1, y)) {
+        blocks = rotated;
+        rotation = (rotation + 1) % 4;
         x++;
       } else if (!checkCollision(grid, rotated, x - 1, y)) {
         blocks = rotated;
+        rotation = (rotation + 1) % 4;
         x--;
       }
 
-      return { grid, tetromino: { blocks, next, x, y } };
+      return {
+        grid,
+        tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
+      };
+    });
+  }
+
+  function holdTetromino() {
+    setGame((prev) => {
+      let grid = prev.grid;
+      let { blocks, rotation, hold, holdAvailable, next, x, y } =
+        prev.tetromino;
+
+      if (holdAvailable) {
+        for (let i = 0; i < (4 - rotation) % 4; i++)
+          blocks = rotateMatrix(blocks);
+
+        let tmp = hold;
+        hold = blocks;
+        if (tmp) blocks = tmp;
+        else {
+          blocks = next.shift();
+          next.push(getTetromino());
+        }
+
+        rotation = 0;
+        holdAvailable = false;
+        x = 3;
+        y = 0;
+      }
+
+      return {
+        grid,
+        tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
+      };
     });
   }
 
@@ -282,8 +343,29 @@ function Game() {
     return shapesJSX;
   }, [game.tetromino.next]);
 
+  const holdToJSX = useCallback(() => {
+    let hold = game.tetromino.hold;
+    if (!hold) return null;
+
+    hold = hold.filter((row) => row.some((cell) => cell));
+
+    let shapeJSX = [];
+    for (const row of hold) {
+      let rowJSX = row.map((cell) => cell || <Cell />);
+      rowJSX = <div className="row">{rowJSX}</div>;
+      shapeJSX.push(rowJSX);
+    }
+
+    shapeJSX = <div className="shape">{shapeJSX}</div>;
+
+    return shapeJSX;
+  }, [game.tetromino.hold]);
+
   return (
     <div className="Game">
+      <div className="left-sidebar">
+        <div className="hold">{holdToJSX()}</div>
+      </div>
       <Grid game={game} HEIGHT={HEIGHT} WIDTH={WIDTH} />
       <div className="right-sidebar">
         <div className="next-tetromino">{nextToJSX()}</div>
