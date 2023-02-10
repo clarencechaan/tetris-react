@@ -17,7 +17,7 @@ function Grid({ game, HEIGHT, WIDTH }) {
       for (let j = 0; j < blocks[0].length; j++)
         if (blocks[i][j]) cells[y + i][x + j] = blocks[i][j];
 
-    return cells;
+    return cells.slice(1);
   }, [game]);
 
   return <div className="Grid">{gameToJSX()}</div>;

@@ -6,7 +6,7 @@ import "../styles/Game.css";
 
 function Game() {
   const WIDTH = 10;
-  const HEIGHT = 20;
+  const HEIGHT = 21;
 
   const [game, setGame] = useState(() => {
     let grid = [];
