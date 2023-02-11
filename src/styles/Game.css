@@ -1,5 +1,14 @@
 .Game {
   display: flex;
+  padding: 16px;
+}
+
+.Game .left-sidebar,
+.Game .right-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 12px;
 }
 
 .Game .left-sidebar {
@@ -8,9 +17,6 @@
 
 .Game .right-sidebar {
   margin-left: 16px;
-  display: flex;
-  flex-direction: column;
-  row-gap: 16px;
 }
 
 .Game .next-tetromino,
@@ -52,4 +58,12 @@
   width: 30px;
   height: 30px;
   font-size: 11px;
+}
+
+.Game .stats {
+  align-self: flex-start;
+}
+
+.Game .stats p {
+  line-height: 22px;
 }

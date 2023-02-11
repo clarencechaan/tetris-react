@@ -364,15 +364,29 @@ function Game() {
   return (
     <div className="Game">
       <div className="left-sidebar">
+        <h3>HOLD</h3>
         <div className="hold">{holdToJSX()}</div>
       </div>
       <Grid game={game} HEIGHT={HEIGHT} WIDTH={WIDTH} />
       <div className="right-sidebar">
+        <h3>NEXT</h3>
         <div className="next-tetromino">{nextToJSX()}</div>
         <div className="stats">
-          <div className="level">Level: {stats.level}</div>
-          <div className="lines">Lines: {stats.lines}</div>
-          <div className="score">Score: {stats.score}</div>
+          <p className="level">
+            LEVEL
+            <br />
+            {stats.level}
+          </p>
+          <p className="lines">
+            LINES
+            <br />
+            {stats.lines}
+          </p>
+          <p className="score">
+            SCORE
+            <br />
+            {stats.score}
+          </p>
         </div>
       </div>
     </div>
