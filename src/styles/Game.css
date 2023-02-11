@@ -67,3 +67,18 @@
 .Game .stats p {
   line-height: 22px;
 }
+
+.Game .left-sidebar .controls p {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  height: 36px;
+}
+
+.Game .left-sidebar .controls .key {
+  font-size: 24px;
+}
+
+.Game .left-sidebar .controls .key.text {
+  font-size: 13px;
+}

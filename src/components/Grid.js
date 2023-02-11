@@ -24,9 +24,15 @@ function Grid({ game, HEIGHT, WIDTH }) {
     <div className="Grid">
       {gameToJSX()}
       {game.gameOver ? (
-        <div className="game-over">
+        <div className="overlay">
           <p>GAME OVER</p>
           <p>PRESS R TO RESTART</p>
+        </div>
+      ) : null}
+      {game.gamePaused ? (
+        <div className="overlay">
+          <p>PAUSED</p>
+          <p>PRESS P TO UNPAUSE</p>
         </div>
       ) : null}
     </div>

@@ -26,7 +26,8 @@ function Game() {
     };
 
     let gameOver = false;
-    return { grid, tetromino, gameOver };
+    let gamePaused = false;
+    return { grid, tetromino, gameOver, gamePaused };
   });
 
   const [stats, setStats] = useState({ level: 0, lines: 0, score: 0 });
@@ -101,8 +102,6 @@ function Game() {
       moveTetromino("D");
     }, speed);
 
-    if (game.gameOver) clearInterval(gravityInterval);
-
     return () => {
       clearInterval(gravityInterval);
     };
@@ -151,6 +150,9 @@ function Game() {
         case "r":
           restartGame();
           break;
+        case "p":
+          togglePause();
+          break;
         default:
       }
     }
@@ -192,6 +194,7 @@ function Game() {
       let { blocks, rotation, hold, holdAvailable, next, x, y } =
         prev.tetromino;
       let gameOver = prev.gameOver;
+      let gamePaused = prev.gamePaused;
 
       function deactivateTetromino() {
         // place tetromino on grid
@@ -240,7 +243,7 @@ function Game() {
         if (checkCollision(grid, blocks, x, y)) gameOver = true;
       }
 
-      if (!gameOver)
+      if (!gameOver && !gamePaused)
         switch (direction) {
           case "L":
             if (!checkCollision(grid, blocks, x - 1, y)) x--;
@@ -263,6 +266,7 @@ function Game() {
         grid,
         tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
         gameOver,
+        gamePaused,
       };
     });
   }
@@ -277,10 +281,11 @@ function Game() {
       let { blocks, rotation, hold, holdAvailable, next, x, y } =
         prev.tetromino;
       let gameOver = prev.gameOver;
+      let gamePaused = prev.gamePaused;
 
       let rotated = rotateMatrix(blocks);
 
-      if (!gameOver)
+      if (!gameOver && !gamePaused)
         if (!checkCollision(grid, rotated, x, y)) {
           blocks = rotated;
           rotation = (rotation + 1) % 4;
@@ -298,6 +303,7 @@ function Game() {
         grid,
         tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
         gameOver,
+        gamePaused,
       };
     });
   }
@@ -308,8 +314,9 @@ function Game() {
       let { blocks, rotation, hold, holdAvailable, next, x, y } =
         prev.tetromino;
       let gameOver = prev.gameOver;
+      let gamePaused = prev.gamePaused;
 
-      if (!gameOver && holdAvailable) {
+      if (!gameOver && !gamePaused && holdAvailable) {
         for (let i = 0; i < (4 - rotation) % 4; i++)
           blocks = rotateMatrix(blocks);
 
@@ -331,6 +338,7 @@ function Game() {
         grid,
         tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
         gameOver,
+        gamePaused,
       };
     });
   }
@@ -399,9 +407,18 @@ function Game() {
       };
 
       let gameOver = false;
-      return { grid, tetromino, gameOver };
+      let gamePaused = false;
+      return { grid, tetromino, gameOver, gamePaused };
     });
     setStats({ level: 0, lines: 0, score: 0 });
+  }
+
+  function togglePause() {
+    setGame((prev) => {
+      let { grid, tetromino, gameOver, gamePaused } = prev;
+      if (!gameOver) gamePaused = !gamePaused;
+      return { grid, tetromino, gameOver, gamePaused };
+    });
   }
 
   return (
@@ -409,6 +426,32 @@ function Game() {
       <div className="left-sidebar">
         <h3>HOLD</h3>
         <div className="hold">{holdToJSX()}</div>
+        <div className="controls">
+          <p>
+            <span className="key">⬅⬇⮕</span>
+            :MOVE
+          </p>
+          <p>
+            <span className="key">⬆</span>
+            :ROTATE
+          </p>
+          <p>
+            <span className="key text">[SPACE]</span>
+            :DROP
+          </p>
+          <p>
+            <span className="key text">[TAB]</span>
+            :HOLD
+          </p>
+          <p>
+            <span className="key">🅿</span>
+            :PAUSE
+          </p>
+          <p>
+            <span className="key">🆁</span>
+            :RESTART
+          </p>
+        </div>
       </div>
       <Grid game={game} HEIGHT={HEIGHT} WIDTH={WIDTH} />
       <div className="right-sidebar">

@@ -7,7 +7,7 @@
   grid-template-columns: repeat(10, 10%);
 }
 
-.Grid .game-over {
+.Grid .overlay {
   background-color: rgba(0, 0, 0, 0.4);
   color: white;
   position: absolute;
