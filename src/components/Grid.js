@@ -20,7 +20,17 @@ function Grid({ game, HEIGHT, WIDTH }) {
     return cells.slice(1);
   }, [game]);
 
-  return <div className="Grid">{gameToJSX()}</div>;
+  return (
+    <div className="Grid">
+      {gameToJSX()}
+      {game.gameOver ? (
+        <div className="game-over">
+          <p>GAME OVER</p>
+          <p>PRESS R TO RESTART</p>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 export default Grid;

@@ -1,7 +1,20 @@
 .Grid {
+  position: relative;
   width: 450px;
   height: 900px;
   background-color: black;
   display: inline-grid;
   grid-template-columns: repeat(10, 10%);
+}
+
+.Grid .game-over {
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }

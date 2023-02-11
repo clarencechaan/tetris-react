@@ -24,7 +24,9 @@ function Game() {
       x: 3,
       y: 0,
     };
-    return { grid, tetromino };
+
+    let gameOver = false;
+    return { grid, tetromino, gameOver };
   });
 
   const [stats, setStats] = useState({ level: 0, lines: 0, score: 0 });
@@ -99,10 +101,12 @@ function Game() {
       moveTetromino("D");
     }, speed);
 
+    if (game.gameOver) clearInterval(gravityInterval);
+
     return () => {
       clearInterval(gravityInterval);
     };
-  }, [stats.level]);
+  }, [stats.level, game.gameOver]);
 
   // listen to keyboard events to control tetromino
   useEffect(() => {
@@ -113,6 +117,7 @@ function Game() {
     function handleKeyDown(e) {
       e.preventDefault();
       if (e.repeat) return;
+
       switch (e.key) {
         case "ArrowLeft":
           clearInterval(moveRightInterval);
@@ -142,6 +147,9 @@ function Game() {
           break;
         case "Tab":
           holdTetromino();
+          break;
+        case "r":
+          restartGame();
           break;
         default:
       }
@@ -183,6 +191,7 @@ function Game() {
       let grid = prev.grid;
       let { blocks, rotation, hold, holdAvailable, next, x, y } =
         prev.tetromino;
+      let gameOver = prev.gameOver;
 
       function deactivateTetromino() {
         // place tetromino on grid
@@ -226,29 +235,34 @@ function Game() {
         holdAvailable = true;
         x = 3;
         y = 0;
+
+        // check if game is over
+        if (checkCollision(grid, blocks, x, y)) gameOver = true;
       }
 
-      switch (direction) {
-        case "L":
-          if (!checkCollision(grid, blocks, x - 1, y)) x--;
-          break;
-        case "R":
-          if (!checkCollision(grid, blocks, x + 1, y)) x++;
-          break;
-        case "D":
-          if (!checkCollision(grid, blocks, x, y + 1)) y++;
-          else deactivateTetromino();
-          break;
-        case " ":
-          while (!checkCollision(grid, blocks, x, y + 1)) y++;
-          deactivateTetromino();
-          break;
-        default:
-      }
+      if (!gameOver)
+        switch (direction) {
+          case "L":
+            if (!checkCollision(grid, blocks, x - 1, y)) x--;
+            break;
+          case "R":
+            if (!checkCollision(grid, blocks, x + 1, y)) x++;
+            break;
+          case "D":
+            if (!checkCollision(grid, blocks, x, y + 1)) y++;
+            else deactivateTetromino();
+            break;
+          case " ":
+            while (!checkCollision(grid, blocks, x, y + 1)) y++;
+            deactivateTetromino();
+            break;
+          default:
+        }
 
       return {
         grid,
         tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
+        gameOver,
       };
     });
   }
@@ -262,25 +276,28 @@ function Game() {
       let grid = prev.grid;
       let { blocks, rotation, hold, holdAvailable, next, x, y } =
         prev.tetromino;
+      let gameOver = prev.gameOver;
 
       let rotated = rotateMatrix(blocks);
 
-      if (!checkCollision(grid, rotated, x, y)) {
-        blocks = rotated;
-        rotation = (rotation + 1) % 4;
-      } else if (!checkCollision(grid, rotated, x + 1, y)) {
-        blocks = rotated;
-        rotation = (rotation + 1) % 4;
-        x++;
-      } else if (!checkCollision(grid, rotated, x - 1, y)) {
-        blocks = rotated;
-        rotation = (rotation + 1) % 4;
-        x--;
-      }
+      if (!gameOver)
+        if (!checkCollision(grid, rotated, x, y)) {
+          blocks = rotated;
+          rotation = (rotation + 1) % 4;
+        } else if (!checkCollision(grid, rotated, x + 1, y)) {
+          blocks = rotated;
+          rotation = (rotation + 1) % 4;
+          x++;
+        } else if (!checkCollision(grid, rotated, x - 1, y)) {
+          blocks = rotated;
+          rotation = (rotation + 1) % 4;
+          x--;
+        }
 
       return {
         grid,
         tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
+        gameOver,
       };
     });
   }
@@ -290,8 +307,9 @@ function Game() {
       let grid = prev.grid;
       let { blocks, rotation, hold, holdAvailable, next, x, y } =
         prev.tetromino;
+      let gameOver = prev.gameOver;
 
-      if (holdAvailable) {
+      if (!gameOver && holdAvailable) {
         for (let i = 0; i < (4 - rotation) % 4; i++)
           blocks = rotateMatrix(blocks);
 
@@ -312,6 +330,7 @@ function Game() {
       return {
         grid,
         tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
+        gameOver,
       };
     });
   }
@@ -360,6 +379,30 @@ function Game() {
 
     return shapeJSX;
   }, [game.tetromino.hold]);
+
+  function restartGame() {
+    setGame(() => {
+      let grid = [];
+      for (let i = 0; i < HEIGHT; i++) grid.push(Array(WIDTH).fill(null));
+
+      let next = [];
+      for (let i = 0; i < 6; i++) next.push(getTetromino());
+
+      let tetromino = {
+        blocks: getTetromino(),
+        rotation: 0,
+        hold: null,
+        holdAvailable: true,
+        next,
+        x: 3,
+        y: 0,
+      };
+
+      let gameOver = false;
+      return { grid, tetromino, gameOver };
+    });
+    setStats({ level: 0, lines: 0, score: 0 });
+  }
 
   return (
     <div className="Game">
