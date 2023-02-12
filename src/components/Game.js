@@ -15,7 +15,7 @@ function Game() {
     let next = [[]];
 
     let tetromino = {
-      blocks: [],
+      blocks: [[]],
       rotation: 0,
       hold: null,
       holdAvailable: true,
@@ -105,7 +105,7 @@ function Game() {
     return () => {
       clearInterval(gravityInterval);
     };
-  }, []);
+  }, [stats.level]);
 
   // listen to keyboard events to control tetromino
   useEffect(() => {
