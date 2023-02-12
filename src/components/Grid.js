@@ -35,6 +35,11 @@ function Grid({ game, HEIGHT, WIDTH }) {
           <p>PRESS P TO UNPAUSE</p>
         </div>
       ) : null}
+      {game.startScreen ? (
+        <div className="overlay">
+          <p>PRESS S TO START</p>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -12,11 +12,10 @@ function Game() {
     let grid = [];
     for (let i = 0; i < HEIGHT; i++) grid.push(Array(WIDTH).fill(null));
 
-    let next = [];
-    for (let i = 0; i < 6; i++) next.push(getTetromino());
+    let next = [[]];
 
     let tetromino = {
-      blocks: getTetromino(),
+      blocks: [],
       rotation: 0,
       hold: null,
       holdAvailable: true,
@@ -27,7 +26,8 @@ function Game() {
 
     let gameOver = false;
     let gamePaused = false;
-    return { grid, tetromino, gameOver, gamePaused };
+    let startScreen = true;
+    return { grid, tetromino, gameOver, gamePaused, startScreen };
   });
 
   const [stats, setStats] = useState({ level: 0, lines: 0, score: 0 });
@@ -105,7 +105,7 @@ function Game() {
     return () => {
       clearInterval(gravityInterval);
     };
-  }, [stats.level, game.gameOver]);
+  }, []);
 
   // listen to keyboard events to control tetromino
   useEffect(() => {
@@ -148,6 +148,7 @@ function Game() {
           holdTetromino();
           break;
         case "r":
+        case "s":
           restartGame();
           break;
         case "p":
@@ -195,6 +196,7 @@ function Game() {
         prev.tetromino;
       let gameOver = prev.gameOver;
       let gamePaused = prev.gamePaused;
+      let startScreen = prev.startScreen;
 
       function deactivateTetromino() {
         // place tetromino on grid
@@ -243,7 +245,7 @@ function Game() {
         if (checkCollision(grid, blocks, x, y)) gameOver = true;
       }
 
-      if (!gameOver && !gamePaused)
+      if (!gameOver && !gamePaused && !startScreen)
         switch (direction) {
           case "L":
             if (!checkCollision(grid, blocks, x - 1, y)) x--;
@@ -267,6 +269,7 @@ function Game() {
         tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
         gameOver,
         gamePaused,
+        startScreen,
       };
     });
   }
@@ -282,10 +285,11 @@ function Game() {
         prev.tetromino;
       let gameOver = prev.gameOver;
       let gamePaused = prev.gamePaused;
+      let startScreen = prev.startScreen;
 
       let rotated = rotateMatrix(blocks);
 
-      if (!gameOver && !gamePaused)
+      if (!gameOver && !gamePaused && !startScreen)
         if (!checkCollision(grid, rotated, x, y)) {
           blocks = rotated;
           rotation = (rotation + 1) % 4;
@@ -304,6 +308,7 @@ function Game() {
         tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
         gameOver,
         gamePaused,
+        startScreen,
       };
     });
   }
@@ -315,8 +320,9 @@ function Game() {
         prev.tetromino;
       let gameOver = prev.gameOver;
       let gamePaused = prev.gamePaused;
+      let startScreen = prev.startScreen;
 
-      if (!gameOver && !gamePaused && holdAvailable) {
+      if (!gameOver && !gamePaused && !startScreen && holdAvailable) {
         for (let i = 0; i < (4 - rotation) % 4; i++)
           blocks = rotateMatrix(blocks);
 
@@ -339,6 +345,7 @@ function Game() {
         tetromino: { blocks, rotation, hold, holdAvailable, next, x, y },
         gameOver,
         gamePaused,
+        startScreen,
       };
     });
   }
@@ -415,8 +422,8 @@ function Game() {
 
   function togglePause() {
     setGame((prev) => {
-      let { grid, tetromino, gameOver, gamePaused } = prev;
-      if (!gameOver) gamePaused = !gamePaused;
+      let { grid, tetromino, gameOver, gamePaused, startScreen } = prev;
+      if (!gameOver && !startScreen) gamePaused = !gamePaused;
       return { grid, tetromino, gameOver, gamePaused };
     });
   }

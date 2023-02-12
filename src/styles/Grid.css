@@ -1,7 +1,7 @@
 .Grid {
   position: relative;
-  width: 450px;
-  height: 900px;
+  width: 400px;
+  height: 800px;
   background-color: black;
   display: inline-grid;
   grid-template-columns: repeat(10, 10%);
