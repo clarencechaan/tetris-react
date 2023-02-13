@@ -114,7 +114,6 @@ function Game() {
     let moveDownInterval;
 
     function handleKeyDown(e) {
-      e.preventDefault();
       if (e.repeat) return;
 
       switch (e.key) {
@@ -145,6 +144,7 @@ function Game() {
           moveTetromino(" ");
           break;
         case "Tab":
+          e.preventDefault();
           holdTetromino();
           break;
         case "r":
