@@ -83,3 +83,40 @@
 .Game .left-sidebar .controls .key.text {
   font-size: 13px;
 }
+
+@media only screen and (min-height: 885px) {
+  .Game {
+    margin-top: 3vh;
+    margin-bottom: auto;
+  }
+}
+
+@media only screen and (max-height: 884px) {
+  .Game {
+    transform: scale(0.9);
+  }
+}
+
+@media only screen and (max-height: 750px) {
+  .Game {
+    transform: scale(0.8);
+  }
+}
+
+@media only screen and (max-height: 667px) {
+  .Game {
+    transform: scale(0.7);
+  }
+}
+
+@media only screen and (max-height: 584px) {
+  .Game {
+    transform: scale(0.6);
+  }
+}
+
+@media only screen and (max-height: 500px) {
+  .Game {
+    transform: scale(0.5);
+  }
+}
