@@ -147,7 +147,6 @@ function Game() {
           e.preventDefault();
           holdTetromino();
           break;
-        case "r":
         case "s":
           restartGame();
           break;
@@ -455,7 +454,7 @@ function Game() {
             :PAUSE
           </p>
           <p>
-            <span className="key">🆁</span>
+            <span className="key">🆂</span>
             :RESTART
           </p>
         </div>

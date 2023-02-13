@@ -26,7 +26,7 @@ function Grid({ game, HEIGHT, WIDTH }) {
       {game.gameOver ? (
         <div className="overlay">
           <p>GAME OVER</p>
-          <p>PRESS R TO RESTART</p>
+          <p>PRESS S TO RESTART</p>
         </div>
       ) : null}
       {game.gamePaused ? (
