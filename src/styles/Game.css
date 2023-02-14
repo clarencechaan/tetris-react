@@ -21,7 +21,7 @@
 
 .Game .next-tetromino,
 .Game .hold {
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.5);
   grid-template-columns: repeat(6, 16.67%);
   align-self: flex-start;
   width: 152px;
@@ -31,7 +31,6 @@
   row-gap: 16px;
   padding: 16px;
   justify-content: space-evenly;
-  border: 1px solid white;
 }
 
 .Game .next-tetromino {

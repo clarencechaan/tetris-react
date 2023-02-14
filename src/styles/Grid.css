@@ -2,10 +2,9 @@
   position: relative;
   width: 400px;
   height: 800px;
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.5);
   display: inline-grid;
   grid-template-columns: repeat(10, 10%);
-  border: 1px solid white;
 }
 
 .Grid .overlay {
