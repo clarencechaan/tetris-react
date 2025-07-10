@@ -3,6 +3,10 @@ import Cell from "./Cell";
 import { useState, useEffect, useCallback } from "react";
 import { getTetromino } from "../scripts/tetromino";
 import "../styles/Game.css";
+import { ReactComponent as ArrowLeft } from "../images/arrow-left.svg";
+import { ReactComponent as ArrowDown } from "../images/arrow-down.svg";
+import { ReactComponent as ArrowRight } from "../images/arrow-right.svg";
+import { ReactComponent as ArrowUp } from "../images/arrow-up.svg";
 
 function Game() {
   const WIDTH = 10;
@@ -434,11 +438,17 @@ function Game() {
         <div className="hold">{holdToJSX()}</div>
         <div className="controls">
           <p>
-            <span className="key">⬅⬇⮕</span>
+            <span className="key arrow-keys">
+              <ArrowLeft />
+              <ArrowDown />
+              <ArrowRight />
+            </span>
             :MOVE
           </p>
           <p>
-            <span className="key">⬆</span>
+            <span className="key arrow-keys">
+              <ArrowUp />
+            </span>
             :ROTATE
           </p>
           <p>
@@ -450,11 +460,11 @@ function Game() {
             :HOLD
           </p>
           <p>
-            <span className="key">🅿</span>
+            <span className="key text">[P]</span>
             :PAUSE
           </p>
           <p>
-            <span className="key">🆂</span>
+            <span className="key text">[S]</span>
             :RESTART
           </p>
         </div>
